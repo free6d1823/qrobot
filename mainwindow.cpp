@@ -54,8 +54,7 @@ void* ReadThread(void* data)
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-    QRect rc = mpDockView2->geometry();
-    mpConsole->setGeometry(rc); ;
+
 }
 
 int MainWindow::WriteMessage(const char* message, int length)
@@ -80,6 +79,11 @@ MainWindow::~MainWindow()
     closeCom();
     delete ui;
 }
+void MainWindow::about()
+{
+   QMessageBox::about(this, tr("About QRobot"),
+            tr("The <b>QRobot</b> demonstrates how to control a 6 DOF robot."));
+}
 void MainWindow::createMenuAndToolbar()
 {
     QToolBar *fileToolBar = ui->mainToolBar;
@@ -100,23 +104,21 @@ void MainWindow::createMenuAndToolbar()
     fileToolBar->addAction(mOpenAct);
     fileToolBar->addAction(mCloseAct);
     fileToolBar->addAction(mClearAct);
+
+    QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
+    const QIcon aboutIcon = QIcon(":/images/about.png");
+    QAction *aboutAct = helpMenu->addAction(aboutIcon, tr("&About"), this, SLOT(about()), QKeySequence::HelpContents);
+    aboutAct->setStatusTip(tr("Show the application's About box"));
+    fileToolBar->addAction(aboutAct);
+
 }
 void MainWindow::createUi()
 {
 
-    mpDockView2 = new QDockWidget(this);
-    mpDockView2->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    mpDockView2->setAllowedAreas(Qt::BottomDockWidgetArea);
-    mpConsole = new Console((QWidget*) mpDockView2);
-    addDockWidget(Qt::BottomDockWidgetArea, mpDockView2);
-
-    QRect rc = mpDockView2->geometry();
-
-    QSizePolicy sizePolicy;
-    sizePolicy.setHorizontalPolicy(QSizePolicy::Expanding);
-    sizePolicy.setVerticalPolicy(QSizePolicy::Expanding);
-    mpConsole->setSizePolicy(sizePolicy);
-    mpConsole->setGeometry(rc); ;
+    mpConsoleView = new ConsleView(this);
+    mpConsoleView->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+    mpConsoleView->setAllowedAreas(Qt::BottomDockWidgetArea);
+    addDockWidget(Qt::BottomDockWidgetArea, mpConsoleView);
 
 
     mpDockView = new QDockWidget(this);
@@ -124,7 +126,6 @@ void MainWindow::createUi()
     mpDockView->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
     mpControlPanel = new ControlPanel((QWidget*) mpDockView);
     addDockWidget(Qt::LeftDockWidgetArea, mpDockView);
-
 
     mpMainView = new MainView(this);
     setCentralWidget(mpMainView);
@@ -146,7 +147,7 @@ void MainWindow::updateUi()
 }
 void MainWindow::onFileClear()
 {
-    mpConsole->appendMessage("Hello");
+    mpConsoleView->appendMessage((const char* )"Hello");
 }
 
 void MainWindow::onFileOpen()

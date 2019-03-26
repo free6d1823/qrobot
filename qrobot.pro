@@ -28,17 +28,23 @@ SOURCES += main.cpp\
     controlpanel.cpp \
     comsetupdlg.cpp \
     mainview.cpp \
-    console.cpp
+    console.cpp \
+    geometryengine.cpp
 
 HEADERS  += mainwindow.h \
     controlpanel.h \
     comsetupdlg.h \
     mainview.h \
-    console.h
+    console.h \
+    geometryengine.h
 
 FORMS    += mainwindow.ui \
     controlpanel.ui \
     comsetupdlg.ui
 
 RESOURCES += \
-    images.qrc
+    images.qrc \
+    textures.qrc \
+    shaders.qrc
+
+DISTFILES +=

@@ -3,5 +3,6 @@
         <file>images/open.png</file>
         <file>images/save.png</file>
         <file>images/ruler.png</file>
+        <file>images/about.png</file>
     </qresource>
 </RCC>

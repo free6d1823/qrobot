@@ -29,16 +29,16 @@ private:
 public slots:
      void onFileOpen();
      void onFileClear();
+     void about();
 private:
      QAction *mOpenAct;
      QAction *mCloseAct;
      QAction *mClearAct;
 
      QDockWidget* mpDockView;
-     QDockWidget* mpDockView2;
+     ConsleView* mpConsoleView;
     ControlPanel* mpControlPanel;
     MainView*   mpMainView;
-    Console*    mpConsole;
 
 protected:
     virtual void resizeEvent(QResizeEvent *event);
