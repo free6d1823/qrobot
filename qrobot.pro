@@ -29,14 +29,16 @@ SOURCES += main.cpp\
     comsetupdlg.cpp \
     mainview.cpp \
     console.cpp \
-    geometryengine.cpp
+    geometryengine.cpp \
+    uartctrl.cpp
 
 HEADERS  += mainwindow.h \
     controlpanel.h \
     comsetupdlg.h \
     mainview.h \
     console.h \
-    geometryengine.h
+    geometryengine.h \
+    uartctrl.h
 
 FORMS    += mainwindow.ui \
     controlpanel.ui \

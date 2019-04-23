@@ -21,7 +21,7 @@ private:
     QStringList* mpPortList;
 public:
     QString mPort;
-    int mBaud;
+    int mBaud;  //number, bits per second
     bool mEightbits;
     bool mPar;
     bool mOne;

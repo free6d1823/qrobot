@@ -13,18 +13,16 @@
 
 
 static int baudList[] = {
-    19200, 38400, 57600, 115200,230400
+    230400, 115200, 57600,  19200,  9600,  4800
 };
-static int BaudIdList[] = {
-    B19200, B38400, B57600, B115200,B230400
-};
+
 
 
 ComSetupDlg::ComSetupDlg(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ComSetupDlg),
     mpPortList(new QStringList),
-    mPort("/dev/ttyUSB0"), mBaud(B115200), mEightbits(true), mPar(false), mOne(true), mHfc(false), mSfc(false)
+    mPort("/dev/ttyUSB0"), mBaud(115200), mEightbits(true), mPar(false), mOne(true), mHfc(false), mSfc(false)
 {
     ui->setupUi(this);
 
@@ -48,7 +46,7 @@ void ComSetupDlg::onOpen()
 
     if ((i = ui->listBaud->currentIndex()) <  (int) (sizeof(baudList)/sizeof(baudList[0])) && (i >= 0))
     {
-        mBaud = BaudIdList[i];
+        mBaud = baudList[i];
     }
     mEightbits = ui->att1->isChecked();
     mPar = (ui->att2->isChecked() );
@@ -101,7 +99,7 @@ void ComSetupDlg::updateUi(QString port, int baud, bool eightbits, bool par, boo
         }
     }
     for (size_t i=0; i< sizeof(baudList)/sizeof(baudList[0]); i++){
-        if (baud == BaudIdList[i]) {
+        if (baud == baudList[i]) {
             ui->listBaud->setCurrentIndex(i);
             break;
         }

@@ -26,7 +26,7 @@ public:
 
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int lineNumberAreaWidth();
-    void appendMessage(const QString& text);
+    void appendMessage(const char* text);
 protected:
     void resizeEvent(QResizeEvent *event) override;
 
@@ -66,7 +66,7 @@ class ConsleView : public QDockWidget
 
 public:
     ConsleView(QWidget *parent = 0);
-    void appendMessage(const QString& text);
+    void appendMessage(const char* text);
     /*!< clear content */
     void clear();
 protected:

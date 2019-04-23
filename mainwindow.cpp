@@ -1,5 +1,5 @@
 #include <QDockWidget>
-#include <termios.h>
+
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -14,10 +14,11 @@
 #include "ui_mainwindow.h"
 #include "controlpanel.h"
 #include "comsetupdlg.h"
+#include "uartctrl.h"
 
-static int mFd = -1; //handle to UART
+
 static char mPort[64]="/dev/ttyUSB0";
-static int mBaud = B115200;
+static int mBaud = 115200;
 static bool mEightbits = true;
 static bool mParity = false;
 static bool mOneStop = true;
@@ -30,27 +31,13 @@ bool mTerminateThread = false;
 pthread_t mThreadId = 0;
 
 MainWindow* gMainWnd = NULL;
-
-void* ReadThread(void* data)
+static UartCtrl mUartCtrl;
+void OnUartReadCallback(const void* buffer, size_t length, void* pUserData)
 {
-    MainWindow* This = (MainWindow*)data;
-    mStateRunning = true;
-    mTerminateThread = false;
-
-    unsigned char rb[1024];
-    while(!mTerminateThread) {
-        if (mFd < 0)
-            break;
-        int c = read(mFd, &rb, sizeof(rb));
-        if (c > 0) {
-            This->WriteMessage((const char*)rb, c);
-            printf("read %d\n", c);
-        }
-        usleep(10000);
-    }
-    mStateRunning = false;
-    return (void*)0;
+    MainWindow* This = (MainWindow*)pUserData;
+    This->postUpdateMessageEvent((const char*)buffer, length);
 }
+
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
@@ -59,9 +46,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 int MainWindow::WriteMessage(const char* message, int length)
 {
-    if (mFd < 0)
-        return -1;
-    return (int) write(mFd, message, length);
+    return mUartCtrl.write(message, length);
 }
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -76,7 +61,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    closeCom();
     delete ui;
 }
 void MainWindow::about()
@@ -111,6 +95,8 @@ void MainWindow::createMenuAndToolbar()
     aboutAct->setStatusTip(tr("Show the application's About box"));
     fileToolBar->addAction(aboutAct);
 
+
+
 }
 void MainWindow::createUi()
 {
@@ -136,7 +122,7 @@ void MainWindow::createUi()
 }
 void MainWindow::updateUi()
 {
-    if(mFd>=0) {
+    if(mUartCtrl.isOpened()) {
         mCloseAct->setEnabled(true);
         mOpenAct->setEnabled(false);
 
@@ -147,14 +133,13 @@ void MainWindow::updateUi()
 }
 void MainWindow::onFileClear()
 {
-    mpConsoleView->appendMessage((const char* )"Hello");
+    mpConsoleView->clear();
 }
 
 void MainWindow::onFileOpen()
 {
-    if(mFd >=0) {
-        closeCom();
-        mFd = -1;
+    if(mUartCtrl.isOpened()) {
+        mUartCtrl.close();
     } else {
         ComSetupDlg dlg;
         dlg.updateUi(QString(mPort), mBaud, mEightbits, mParity, mOneStop, mHfc, mSfc);
@@ -168,125 +153,40 @@ void MainWindow::onFileOpen()
             mOneStop = dlg.mOne;
             mHfc= dlg.mHfc;
             mSfc = dlg.mSfc;
-            openCom();
+            mUartCtrl.setBaud(mBaud);
+            mUartCtrl.setAttrib(8,1,'n',false,false);
+            if (0 > mUartCtrl.open(mPort, OnUartReadCallback, this))
+            {
+                QMessageBox::critical(this,tr("Open Com"),tr("Open UART failed!"));
+            }
 
         }
     }
     updateUi();
 }
-
-void MainWindow::closeCom()
+void MainWindow::customEvent(QEvent* event)
 {
-    if (mStateRunning) {
-        mTerminateThread = true;
-        pthread_join(mThreadId, NULL);
-        mStateRunning = false; //force false
-        mThreadId = 0;
-    }
-    if (mFd >=0 ){
-        ::close(mFd);
-        mFd = -1;
+    if(event->type() == MY_CUSTOM_EVENT)
+    {
+        handleUpdateMessageEvent(static_cast<UpdateMEssageEvent *>(event));
     }
 }
 
-int MainWindow::openCom()
+void MainWindow::postUpdateMessageEvent(const char* message, int length)
 {
-    mFd = -1;
-    //check port
-    struct stat   sb;
-    if ( stat(mPort, &sb) != 0) {
-        QMessageBox mess(QMessageBox::Warning, "open", "Invalide UART path!", QMessageBox::Close, this);
-        mess.exec();
-        return -1;
-    }
+static char szText[1024];
 
-    int fd = ::open (mPort, O_RDWR | O_NOCTTY | O_DSYNC, S_IRUSR | S_IWUSR);
-    if (fd < 0)
-    {
-        char buff[256];
-        sprintf(buff, "Failed to open device %s.\n%s.", mPort,
-                strerror(errno));
-        QMessageBox mess(QMessageBox::Warning, "Open", buff, QMessageBox::Close, this);
-        mess.exec();
-        return fd;
-    }
-    //////////////////////////////
-    /// \brief configure TTY
-    ///
-    while (fd >= 0) {
-        struct termios tty;
-        memset (&tty, 0, sizeof tty);
-        if (tcgetattr (fd, &tty) != 0)
-        {
-            char buff[256];
-            sprintf(buff, "Error from tcgetattr.\n%s.", strerror(errno));
-            QMessageBox mess(QMessageBox::Warning, "Open", buff, QMessageBox::Close, this);
-            mess.exec();
-            break;
+    if (length > sizeof(szText)-1)
+        length = sizeof(szText)-1;
+    memcpy(szText, message, length);
+    //make text visible
+    szText[length] = 0;
+    QApplication::postEvent(this,
+                            new UpdateMEssageEvent(szText, length));
 
-        }
-
-        cfsetospeed (&tty, mBaud);
-        cfsetispeed (&tty, mBaud);
-        if (mEightbits)
-            tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;     // 8-bit chars
-        else
-            tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS7;     // 7-bit chars
-
-         // disable IGNBRK for mismatched speed tests; otherwise receive break
-         // as \000 chars
-         tty.c_iflag &= ~IGNBRK;         // disable break processing
-         tty.c_lflag = 0;                // no signaling chars, no echo,
-                                         // no canonical processing
-         tty.c_oflag = 0;                // no remapping, no delays
-         tty.c_cc[VMIN]  = 0;            // read doesn't block
-         tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
-
-         if (mSfc)
-             tty.c_iflag |= (IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
-         else
-             tty.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
-
-         tty.c_cflag |= (CLOCAL | CREAD);// ignore modem controls,
-                                         // enable reading
-         if (!mParity) {
-            tty.c_cflag &= ~(PARENB | PARODD);      // shut off parity
-         }
-         else {
-            tty.c_cflag |= (PARENB);//even parity for simple // | PARODD);
-            tty.c_cflag |= PARODD;    //是odd同位元檢查
-         }
-         if (mOneStop) {
-             tty.c_cflag |= ~CSTOPB; //not two stops
-         } else {
-              tty.c_cflag &= CSTOPB; //two stops
-         }
-         if (mHfc)
-             tty.c_cflag |= CRTSCTS;
-         else
-             tty.c_cflag &= ~CRTSCTS;
-
-         /* now clean the modem line and activate the settings for the port */
-        tcflush(fd, TCIOFLUSH);
-
-         if (tcsetattr (fd, TCSANOW, &tty) != 0)
-         {
-             char buff[256];
-             sprintf(buff, "Error from tcsetattr.\n%s.", strerror(errno));
-             QMessageBox mess(QMessageBox::Warning, "Open", buff, QMessageBox::Close, this);
-             mess.exec();
-             break;
-         }
-        mFd = fd;
-
-        ////create read thread
-        ///
-        ///
-        pthread_create(&mThreadId, NULL, ReadThread, (void*) this);
-        break;
-    }
-    if (mFd != fd) {
-       ::close(fd);
-    }
-    return mFd;
+}
+//handle the message in GUI thread
+void MainWindow::handleUpdateMessageEvent(const UpdateMEssageEvent *event)
+{
+    mpConsoleView->appendMessage(event->getMessage() );
 }

@@ -55,7 +55,6 @@ ConsleView::ConsleView(QWidget *parent)
 {
     mpConsole = new Console((QWidget*) this);
 
-
     QSizePolicy sizePolicy;
     sizePolicy.setHorizontalPolicy(QSizePolicy::Expanding);
     sizePolicy.setVerticalPolicy(QSizePolicy::Expanding);
@@ -71,7 +70,7 @@ void ConsleView::resizeEvent(QResizeEvent *event)
     mpConsole->setGeometry(rc2); ;
 
 }
-void ConsleView::appendMessage(const QString& text)
+void ConsleView::appendMessage(const char* text)
 {
     mpConsole->appendMessage(text);
 }
@@ -91,7 +90,7 @@ Console::Console(QWidget *parent) :
 
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
-
+    setMaximumBlockCount(1000);
 }
 
 
@@ -183,7 +182,7 @@ void Console::lineNumberAreaPaintEvent(QPaintEvent *event)
 }
 //![extraAreaPaintEvent_2]
 //!
-void Console::appendMessage(const QString& text)
+void Console::appendMessage(const char* text)
 {
     this->appendPlainText(text); // Adds the message to the widget
     this->verticalScrollBar()->setValue(this->verticalScrollBar()->maximum());
