@@ -22,7 +22,7 @@ ComSetupDlg::ComSetupDlg(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ComSetupDlg),
     mpPortList(new QStringList),
-    mPort("/dev/ttyUSB0"), mBaud(115200), mEightbits(true), mPar(false), mOne(true), mHfc(false), mSfc(false)
+    mPort("/dev/ttyUSB0"), mBaud(115200), mDatabits(8), mParity('n'), mStopbits(1), mHfc(false), mSfc(false)
 {
     ui->setupUi(this);
 
@@ -31,7 +31,7 @@ ComSetupDlg::ComSetupDlg(QWidget *parent) :
     }
     connect(ui->listPort, SIGNAL(activated(int)), SLOT(onClickPortList(int)));
     connect(ui->btnOK, SIGNAL(clicked()), SLOT(onOpen()));
-
+    updateUi();
 }
 void ComSetupDlg::onOpen()
 {
@@ -48,11 +48,16 @@ void ComSetupDlg::onOpen()
     {
         mBaud = baudList[i];
     }
-    mEightbits = ui->att1->isChecked();
-    mPar = (ui->att2->isChecked() );
-    mOne = (ui->att3->isChecked() );
-    mHfc = (ui->att4->isChecked() );
-    mSfc = (ui->att5->isChecked() );
+    mDatabits = (ui->db7->isChecked())?7:8;
+    if (ui->peven->isChecked())
+        mParity = 'e';
+    else if (ui->podd->isChecked())
+        mParity = 'o';
+    else
+        mParity = 'n';
+    mStopbits = (ui->s1->isChecked() )?1:2;
+    mHfc = (ui->hfc->isChecked() );
+    mSfc = (ui->sfc->isChecked() );
 
     accept();
 }
@@ -86,10 +91,23 @@ ComSetupDlg::~ComSetupDlg()
     delete mpPortList;
 }
 /* baud = BaudRate ID Bnnn */
-void ComSetupDlg::updateUi(QString port, int baud, bool eightbits, bool par, bool one, bool hfc, bool sfc)
+void ComSetupDlg::set(QString port, int baud, int databits, int parity, int stopbits, bool hfc, bool sfc)
 {
     pollingComPort();
     mPort = port;
+
+
+    mBaud = baud;
+    mStopbits = databits;
+    mParity = parity;
+    mStopbits = stopbits;
+    mHfc = hfc;
+    mSfc = sfc;
+    updateUi();
+}
+
+void ComSetupDlg::updateUi()
+{
     ui->listPort->setCurrentIndex(-1);
     for (int i=0; i< mpPortList->size(); i++){
 
@@ -99,24 +117,29 @@ void ComSetupDlg::updateUi(QString port, int baud, bool eightbits, bool par, boo
         }
     }
     for (size_t i=0; i< sizeof(baudList)/sizeof(baudList[0]); i++){
-        if (baud == baudList[i]) {
+        if (mBaud == baudList[i]) {
             ui->listBaud->setCurrentIndex(i);
             break;
         }
     }
+    ui->db7->setChecked(mStopbits==7);
+    ui->db8->setChecked(mStopbits!=7);
+    switch(mParity)
+    {
+    case 'o':
+        ui->podd->setChecked(1);ui->peven->setChecked(0);ui->pnone->setChecked(0);
+        break;
+    case 'e':
+        ui->podd->setChecked(0);ui->peven->setChecked(1);ui->pnone->setChecked(0);
+        break;
+    default:
+        ui->podd->setChecked(0);ui->peven->setChecked(0);ui->pnone->setChecked(1);
+        break;
 
-    ui->att1->setChecked(eightbits);
-    ui->att2->setChecked(par);
-    ui->att3->setChecked(one);
-    ui->att4->setChecked(hfc);
-    ui->att5->setChecked(sfc);
 
-    mBaud = baud;
-    mEightbits = eightbits;
-    mPar = par;
-    mOne = one;
-    mHfc = hfc;
-    mSfc = sfc;
-
+    }
+    ui->s1->setChecked(mStopbits != 2);
+    ui->s2->setChecked(mStopbits == 2);
+    ui->hfc->setChecked(mHfc);
+    ui->sfc->setChecked(mSfc);
 }
-

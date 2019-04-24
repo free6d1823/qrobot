@@ -76,14 +76,14 @@ protected:
     class UpdateMEssageEvent : public QEvent
     {
         public:
-            UpdateMEssageEvent(const char* message, int length):
+            UpdateMEssageEvent(char* message, int length):
                 QEvent(MY_CUSTOM_EVENT),
                 mPtrMessage(message),
                 mLength(length)
             {
             }
 
-            const char* getMessage() const
+            char* getMessage() const
             {
                 return mPtrMessage;
             }
@@ -94,13 +94,13 @@ protected:
             }
 
         private:
-            const char* mPtrMessage;
+            char* mPtrMessage;
             int mLength;
     };
 public:
     void postUpdateMessageEvent(const char* message, int length);
 private:
-    void handleUpdateMessageEvent(const UpdateMEssageEvent *event);
+    void handleUpdateMessageEvent(UpdateMEssageEvent *event);
 };
 
 

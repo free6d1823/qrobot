@@ -70,7 +70,7 @@ void ConsleView::resizeEvent(QResizeEvent *event)
     mpConsole->setGeometry(rc2); ;
 
 }
-void ConsleView::appendMessage(const char* text)
+void ConsleView::appendMessage(char* text)
 {
     mpConsole->appendMessage(text);
 }
@@ -182,8 +182,12 @@ void Console::lineNumberAreaPaintEvent(QPaintEvent *event)
 }
 //![extraAreaPaintEvent_2]
 //!
-void Console::appendMessage(const char* text)
+void Console::appendMessage(char* text)
 {
+    //remove last \n
+    size_t len = strlen(text);
+    if (text[len-1]== '\n')
+        text[len-1]=0;
     this->appendPlainText(text); // Adds the message to the widget
     this->verticalScrollBar()->setValue(this->verticalScrollBar()->maximum());
 }

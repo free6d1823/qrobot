@@ -14,19 +14,20 @@ class ComSetupDlg : public QDialog
 public:
     explicit ComSetupDlg(QWidget *parent = 0);
     ~ComSetupDlg();
-    void updateUi(QString port, int baud, bool eightbits, bool par, bool one, bool hfc, bool sfc);
+    void set(QString port, int baud, int databits, int parity, int stopbits, bool hfc, bool sfc);
 private:
     void pollingComPort();
+    void updateUi();
     Ui::ComSetupDlg *ui;
     QStringList* mpPortList;
 public:
     QString mPort;
     int mBaud;  //number, bits per second
-    bool mEightbits;
-    bool mPar;
-    bool mOne;
-    bool mHfc;
-    bool mSfc;
+    int mDatabits;  //7/8
+    int mParity;    //'n','o','e'
+    int mStopbits;  //1,2
+    bool mHfc;      //true to enable hardware flow control
+    bool mSfc;      //true to enable software flow control
 
 signals:
 public slots:

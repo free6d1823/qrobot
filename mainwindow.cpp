@@ -19,9 +19,9 @@
 
 static char mPort[64]="/dev/ttyUSB0";
 static int mBaud = 115200;
-static bool mEightbits = true;
-static bool mParity = false;
-static bool mOneStop = true;
+static int mDatabits = 8;
+static int mParity = 'n';
+static int mStopbits = 1;
 static bool mHfc = false;
 static bool mSfc = false;
 
@@ -35,7 +35,7 @@ static UartCtrl mUartCtrl;
 void OnUartReadCallback(const void* buffer, size_t length, void* pUserData)
 {
     MainWindow* This = (MainWindow*)pUserData;
-    This->postUpdateMessageEvent((const char*)buffer, length);
+    This->postUpdateMessageEvent((const char* )buffer, length);
 }
 
 
@@ -142,19 +142,19 @@ void MainWindow::onFileOpen()
         mUartCtrl.close();
     } else {
         ComSetupDlg dlg;
-        dlg.updateUi(QString(mPort), mBaud, mEightbits, mParity, mOneStop, mHfc, mSfc);
+        dlg.set(QString(mPort), mBaud, mDatabits, mParity, mStopbits, mHfc, mSfc);
         if( dlg.exec() == 1)
         {
             mBaud = dlg.mBaud;
 
             strncpy(mPort, dlg.mPort.toLocal8Bit().constData(), sizeof(mPort));
-            mEightbits = dlg.mEightbits;
-            mParity = dlg.mPar;
-            mOneStop = dlg.mOne;
+            mDatabits = dlg.mDatabits;
+            mParity = dlg.mParity;
+            mStopbits = dlg.mStopbits;
             mHfc= dlg.mHfc;
             mSfc = dlg.mSfc;
             mUartCtrl.setBaud(mBaud);
-            mUartCtrl.setAttrib(8,1,'n',false,false);
+            mUartCtrl.setAttrib(mDatabits,mStopbits,mParity,mHfc,mSfc);
             if (0 > mUartCtrl.open(mPort, OnUartReadCallback, this))
             {
                 QMessageBox::critical(this,tr("Open Com"),tr("Open UART failed!"));
@@ -186,7 +186,7 @@ static char szText[1024];
 
 }
 //handle the message in GUI thread
-void MainWindow::handleUpdateMessageEvent(const UpdateMEssageEvent *event)
+void MainWindow::handleUpdateMessageEvent(UpdateMEssageEvent *event)
 {
     mpConsoleView->appendMessage(event->getMessage() );
 }

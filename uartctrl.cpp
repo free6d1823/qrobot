@@ -71,8 +71,12 @@ static int setParity(int fd,int databits,int stopbits,int parity, bool bHfc, boo
     }
     if(!bSfc)
         options.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
+    else
+        options.c_iflag |= (IXON | IXOFF | IXANY); // xon/xoff ctrl
     if(!bHfc)
         options.c_cflag &= ~CRTSCTS;
+    else
+        options.c_cflag |= CRTSCTS;
 
     options.c_cflag &= ~CSIZE;
     switch (databits) /*設置數據位元數*/
@@ -192,8 +196,8 @@ void UartCtrl::onReadCallback()
         mpReceiveBuffer = (char*) malloc(RECEIVE_BUFFER_SIZE);
 
     int flags = fcntl(mFd, F_GETFL, 0);
-    if(fcntl(mFd, F_SETFL, flags | O_NONBLOCK))
-        ;// some kind of fail
+    fcntl(mFd, F_SETFL, flags | O_NONBLOCK);
+
 
     while(!mTerminateThread && mFd >= 0) {
         int c = read(mFd, mpReceiveBuffer, RECEIVE_BUFFER_SIZE);
