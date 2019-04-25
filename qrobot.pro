@@ -25,24 +25,32 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    controlpanel.cpp \
     comsetupdlg.cpp \
     mainview.cpp \
     console.cpp \
     geometryengine.cpp \
-    uartctrl.cpp
+    uartctrl.cpp \
+    servo.cpp \
+    calibrate.cpp \
+    servoctrl.cpp \
+    inifile/inifile.cpp
 
 HEADERS  += mainwindow.h \
-    controlpanel.h \
     comsetupdlg.h \
     mainview.h \
     console.h \
     geometryengine.h \
-    uartctrl.h
+    uartctrl.h \
+    servo.h \
+    calibrate.h \
+    common.h \
+    servoctrl.h \
+    inifile/inifile.h
 
 FORMS    += mainwindow.ui \
-    controlpanel.ui \
-    comsetupdlg.ui
+    comsetupdlg.ui \
+    calibrate.ui \
+    servoctrl.ui
 
 RESOURCES += \
     images.qrc \

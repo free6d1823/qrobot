@@ -2,39 +2,20 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
+#include "common.h"
 #include "mainview.h"
 #include "console.h"
-
-
-#include <QDebug>
-#include <QMetaType>
-#include <QStringList>
-
-class Message
-{
-public:
-    Message();
-    Message(const Message &other);
-    ~Message();
-
-    Message(const QString &body, const QStringList &headers);
-
-    QString body() const;
-    QStringList headers() const;
-
-private:
-    QString m_body;
-    QStringList m_headers;
-};
-
-Q_DECLARE_METATYPE(Message);
+#include "servo.h"
+#include "uartctrl.h"
 /////////////////////////////
 namespace Ui {
 class MainWindow;
 }
 
-class ControlPanel;
+class ServoPage;
+class CaliPage;
+class UartCtrl;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -44,6 +25,12 @@ public:
     ~MainWindow();
 
     int WriteMessage(const char* message, int length);
+    bool loadSettings(const char* szIniName);
+    bool saveSettings(const char* szIniName);
+    UartCtrl* getUart(){ return &mUartCtrl;}
+    Servo* getServo(int i){
+        return &mServo[i%MAX_SERVOS_NUMBER];
+    }
 
 private:
     Ui::MainWindow *ui;
@@ -54,19 +41,27 @@ private:
 public slots:
      void onFileOpen();
      void onFileClear();
+     void onFileSave();
      void about();
-
+     void onPage0();
+     void onPage1();
+     void onPage2();
+     void onPage3();
 private:
      QAction *mOpenAct;
      QAction *mCloseAct;
      QAction *mClearAct;
-
-     QDockWidget* mpDockView;
-     ConsleView* mpConsoleView;
-    ControlPanel* mpControlPanel;
+    QAction *mPageAct[MAX_PAGES];
+    QDockWidget* mpDockView;
+    ConsleView* mpConsoleView;
+    UartCtrl mUartCtrl;
+    int mCurrentPageId;
+    ServoPage* mpServoPage;
+    CaliPage* mpCaliPage;
     MainView*   mpMainView;
-
+    Servo   mServo[MAX_SERVOS_NUMBER];
 protected:
+    void doEnablePage(int id);
     virtual void resizeEvent(QResizeEvent *event);
     ////////////////////////////////////////////////////////////////
     virtual void customEvent(QEvent* event);
@@ -106,4 +101,6 @@ private:
 
 
 extern MainWindow* gMainWnd;
+
+
 #endif // MAINWINDOW_H

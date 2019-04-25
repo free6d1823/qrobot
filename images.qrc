@@ -1,8 +1,14 @@
 <RCC>
     <qresource prefix="/">
         <file>images/open.png</file>
-        <file>images/save.png</file>
-        <file>images/ruler.png</file>
         <file>images/about.png</file>
+        <file>images/calibrate.png</file>
+        <file>images/close.png</file>
+        <file>images/clear.png</file>
+        <file>images/control.png</file>
+        <file>images/sequence.png</file>
+        <file>images/seqedit.png</file>
+        <file>images/exit.png</file>
+        <file>images/save.png</file>
     </qresource>
 </RCC>

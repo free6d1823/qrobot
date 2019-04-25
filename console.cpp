@@ -55,11 +55,14 @@ ConsleView::ConsleView(QWidget *parent)
 {
     mpConsole = new Console((QWidget*) this);
 
+    mpConsole->setMinimumHeight(100);
     QSizePolicy sizePolicy;
     sizePolicy.setHorizontalPolicy(QSizePolicy::Expanding);
-    sizePolicy.setVerticalPolicy(QSizePolicy::Expanding);
+    sizePolicy.setVerticalPolicy(QSizePolicy::Fixed);
     mpConsole->setSizePolicy(sizePolicy);
     mpConsole->show();
+
+
 
 }
 void ConsleView::resizeEvent(QResizeEvent *event)
