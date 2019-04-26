@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "common.h"
-
+#include "controlpage.h"
 namespace Ui {
 class ServoCtrl;
 }
@@ -29,13 +29,13 @@ private:
     int mId;
     Ui::ServoCtrl *ui;
 };
-class ServoPage : public QWidget
+class PageServo : public ControlPage
 {
     Q_OBJECT
 
 public:
-    explicit ServoPage(QWidget *parent = 0);
-    ~ServoPage();
+    explicit PageServo(QWidget *parent = 0);
+    virtual ~PageServo();
     ///
     /// \brief activate the page
     /// \param enable true to activate, false to deactivate

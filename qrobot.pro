@@ -31,9 +31,10 @@ SOURCES += main.cpp\
     geometryengine.cpp \
     uartctrl.cpp \
     servo.cpp \
-    calibrate.cpp \
-    servoctrl.cpp \
-    inifile/inifile.cpp
+    inifile/inifile.cpp \
+    controlpage.cpp \
+    pagecali.cpp \
+    pageservo.cpp
 
 HEADERS  += mainwindow.h \
     comsetupdlg.h \
@@ -42,10 +43,11 @@ HEADERS  += mainwindow.h \
     geometryengine.h \
     uartctrl.h \
     servo.h \
-    calibrate.h \
     common.h \
-    servoctrl.h \
-    inifile/inifile.h
+    inifile/inifile.h \
+    controlpage.h \
+    pagecali.h \
+    pgeservo.h
 
 FORMS    += mainwindow.ui \
     comsetupdlg.ui \

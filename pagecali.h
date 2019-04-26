@@ -2,8 +2,10 @@
 #define CALIPAGE_H
 
 #include <QWidget>
+#include <QToolButton>
+#include <QButtonGroup>
 #include "common.h"
-
+#include "controlpage.h"
 namespace Ui {
 class Calibrate;
 }
@@ -13,29 +15,28 @@ class Calibrate : public QWidget
     Q_OBJECT
 
 public:
-    explicit Calibrate(QWidget *parent, int id);
+    explicit Calibrate(QWidget *parent );
     ~Calibrate();
     ///
     /// \brief update UI with Servo data
     ///
-    virtual void updateUi();
+    void updateUi(int id);
     ///
     /// \brief save UI to Servo object
     ///
-    virtual void saveUi();
+    void saveUi(int id);
 private:
-    int mId;
     Ui::Calibrate *ui;
 };
 
 
-class CaliPage : public QWidget
+class PageCali : public ControlPage
 {
     Q_OBJECT
 
 public:
-    explicit CaliPage(QWidget *parent = 0);
-    ~CaliPage();
+    explicit PageCali(QWidget *parent = 0);
+    ~PageCali();
     ///
     /// \brief activate the page
     /// \param enable true to activate, false to deactivate
@@ -45,9 +46,16 @@ public:
     /// \brief save Ui to all Servo objects
     ///
     virtual void saveUi();
+public slots:
+     void onBtnSelected(int id);
 private:
 
-    Calibrate* mpCali[MAX_SERVOS_NUMBER];
+    QIcon mIconOn[MAX_SERVOS_NUMBER];
+    QIcon mIconOff[MAX_SERVOS_NUMBER];
+
+    QToolButton* mpBtnServo[MAX_SERVOS_NUMBER];
+    Calibrate* mpCali;
+    int mCurSel;
 };
 
 #endif // CALIPAGE_H

@@ -12,8 +12,8 @@ namespace Ui {
 class MainWindow;
 }
 
-class ServoPage;
-class CaliPage;
+class ControlPage;
+
 class UartCtrl;
 
 class MainWindow : public QMainWindow
@@ -40,24 +40,35 @@ private:
 
 public slots:
      void onFileOpen();
-     void onFileClear();
      void onFileSave();
+     void onFileConnect();
+
+     void onViewClear();
+     void onZoomin(){};
+     void onZoomout(){};
      void about();
      void onPage0();
      void onPage1();
      void onPage2();
      void onPage3();
 private:
-     QAction *mOpenAct;
-     QAction *mCloseAct;
-     QAction *mClearAct;
+    QAction *mOpenAct;
+    QAction *mSaveAct;
+    QAction *mConAct;
+    QAction *mDisAct;
+    QAction *mClearAct;
+    QAction *mZoominAct;
+    QAction *mZoomoutAct;
     QAction *mPageAct[MAX_PAGES];
+    QIcon   mPageOn[MAX_PAGES];
+    QIcon   mPageOff[MAX_PAGES];
+    int mCurrentPageId;
+    ControlPage* mpCtlPage[MAX_PAGES];
+
     QDockWidget* mpDockView;
     ConsleView* mpConsoleView;
     UartCtrl mUartCtrl;
-    int mCurrentPageId;
-    ServoPage* mpServoPage;
-    CaliPage* mpCaliPage;
+
     MainView*   mpMainView;
     Servo   mServo[MAX_SERVOS_NUMBER];
 protected:

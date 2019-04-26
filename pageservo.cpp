@@ -1,5 +1,5 @@
 #include <QVBoxLayout>
-#include "servoctrl.h"
+#include "pgeservo.h"
 #include "ui_servoctrl.h"
 #include "mainwindow.h"
 
@@ -47,8 +47,8 @@ void ServoCtrl::saveUi()
 
 }
 ///////////////////////////////
-ServoPage::ServoPage(QWidget *parent) :
-    QWidget(parent)
+PageServo::PageServo(QWidget *parent) :
+    ControlPage(parent)
 {
     QVBoxLayout* mainLayout = new QVBoxLayout(this)  ;
     for (int i=0; i< MAX_SERVOS_NUMBER; i++) {
@@ -62,13 +62,13 @@ ServoPage::ServoPage(QWidget *parent) :
 
 }
 
-ServoPage::~ServoPage()
+PageServo::~PageServo()
 {
 
 }
 
 
-void ServoPage::activate(bool enable)
+void PageServo::activate(bool enable)
 {
     if (enable) {
         for (int i=0; i< MAX_SERVOS_NUMBER; i++) {
@@ -77,7 +77,7 @@ void ServoPage::activate(bool enable)
     }
     setVisible(enable);
 }
-void ServoPage::saveUi()
+void PageServo::saveUi()
 {
     for (int i=0; i< MAX_SERVOS_NUMBER; i++) {
         mpServoCtrl[i]->saveUi();

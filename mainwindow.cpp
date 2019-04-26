@@ -9,14 +9,15 @@
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
-
+#include <QIcon>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 #include "comsetupdlg.h"
 
-#include "calibrate.h"
-#include "servoctrl.h"
+#include "controlpage.h"
+#include "pagecali.h"
+#include "pgeservo.h"
 #include "inifile/inifile.h"
 static char mPort[64]="/dev/ttyUSB0";
 static int mBaud = 115200;
@@ -76,21 +77,27 @@ void MainWindow::about()
 void MainWindow::createMenuAndToolbar()
 {
     QToolBar *fileToolBar = ui->mainToolBar;
+    //// Menu FILE
     QMenu* fileMenu = ui->menuBar->addMenu(tr("&File"));
     const QIcon openIcon = QIcon(":/images/open.png");
-    mOpenAct = fileMenu->addAction(openIcon, tr("&Connect..."), this,
+    mOpenAct = fileMenu->addAction(openIcon, tr("&Open..."), this,
                     SLOT(onFileOpen()), QKeySequence::Open);
-    mOpenAct->setStatusTip(tr("Open a COM port."));
-
-    const QIcon closeIcon = QIcon(":/images/close.png");
-    mCloseAct = fileMenu->addAction(closeIcon, tr("&Disconnect"), this,
-                    SLOT(onFileOpen()), QKeySequence::Close);
-    mCloseAct->setStatusTip(tr("Disconnect COM port."));
-
+    mOpenAct->setStatusTip(tr("Open a project file."));
     const QIcon saveIcon = QIcon(":/images/save.png");
-    QAction* saveAct = fileMenu->addAction(saveIcon, tr("&Save"), this,
+    mSaveAct = fileMenu->addAction(saveIcon, tr("&Save"), this,
                     SLOT(onFileSave()), QKeySequence::Save);
-    saveAct->setStatusTip(tr("Save settings."));
+    mSaveAct->setStatusTip(tr("Save settings to project file."));
+    fileMenu->addSeparator();
+
+    const QIcon conIcon = QIcon(":/images/connect.png");
+    mConAct = fileMenu->addAction(conIcon, tr("&Connect"), this,
+                    SLOT(onFileConnect()), QKeySequence::Copy);
+    mConAct->setStatusTip(tr("Disconnect COM port."));
+
+    const QIcon disIcon = QIcon(":/images/disconnect.png");
+    mDisAct = fileMenu->addAction(disIcon, tr("&Disconnect"), this,
+                    SLOT(onFileConnect()), QKeySequence::Paste);
+    mDisAct->setStatusTip(tr("Disconnect COM port."));
 
     fileMenu->addSeparator();
     const QIcon exitIcon =  QIcon(":/images/exit.png");
@@ -98,44 +105,67 @@ void MainWindow::createMenuAndToolbar()
             SLOT(close()), QKeySequence::Quit);
     exitAct->setStatusTip(tr("Exit this program."));
     fileToolBar->addAction(mOpenAct);
-    fileToolBar->addAction(mCloseAct);
-    fileToolBar->addAction(saveAct);
+    fileToolBar->addAction(mSaveAct);
     fileToolBar->addSeparator();
-    /////////////////////
+    fileToolBar->addAction(mConAct);
+    fileToolBar->addAction(mDisAct);
+    fileToolBar->addSeparator();
+
+    //// Control /////////////////
+    QMenu* controlMenu = ui->menuBar->addMenu(tr("&Control"));
+
+
+    const char* item[MAX_PAGES] = {
+        "Servo Control",
+        "Calibration",
+        "Sequence",
+        "Editor"
+    };
+    const char* desc[MAX_PAGES] = {
+        "Control each servo",
+        "Servo calibration",
+        "Sequencial play",
+        "Show sequence editor"
+    };
+
+    mPageOff[0].addFile(":/images/page0_off.png",QSize(),QIcon::Normal, QIcon::On);
+    mPageOn[0].addFile(":/images/page0_on.png",QSize(),QIcon::Normal, QIcon::On);
+    mPageOff[1].addFile(":/images/page1_off.png",QSize(),QIcon::Normal, QIcon::On);
+    mPageOn[1].addFile(":/images/page1_on.png",QSize(),QIcon::Normal, QIcon::On);
+    mPageOff[2].addFile(":/images/page2_off.png",QSize(),QIcon::Normal, QIcon::On);
+    mPageOn[2].addFile(":/images/page2_on.png",QSize(),QIcon::Normal, QIcon::On);
+    mPageOff[3].addFile(":/images/page3_off.png",QSize(),QIcon::Normal, QIcon::On);
+    mPageOn[3].addFile(":/images/page3_on.png",QSize(),QIcon::Normal, QIcon::On);
+    mPageAct[0] = controlMenu->addAction(mPageOn[0], item[0], this, SLOT(onPage0()));
+    mPageAct[1] = controlMenu->addAction(mPageOff[1], item[1], this, SLOT(onPage1()));
+    mPageAct[2] = controlMenu->addAction(mPageOff[2], item[2], this, SLOT(onPage2()));
+    mPageAct[3] = controlMenu->addAction(mPageOff[3], item[3], this, SLOT(onPage3()));
+    for (int i=0; i< MAX_PAGES; i++){
+        fileToolBar->addAction(mPageAct[i]);
+        mPageAct[i]->setStatusTip(desc[i]);
+        mPageAct[i]->setCheckable(true);
+    }
+    //// VIEW /////////////////
     QMenu* viewMenu = ui->menuBar->addMenu(tr("&View"));
+    const QIcon zoominIcon = QIcon(":/images/zoomin.png");
+    mZoominAct = viewMenu->addAction(zoominIcon, tr("&Zoom In"), this,
+                    SLOT(onZoomin()), QKeySequence::ZoomIn);
+    mZoominAct->setStatusTip(tr("Look near the robot"));
+    fileToolBar->addAction(mZoominAct);
+    const QIcon zoomoutIcon = QIcon(":/images/zoomout.png");
+    mZoomoutAct = viewMenu->addAction(zoomoutIcon, tr("&Zoom Out"), this,
+                    SLOT(onZoomout()), QKeySequence::ZoomOut);
+    mZoominAct->setStatusTip(tr("Look far away the robot"));
+    fileToolBar->addAction(mZoomoutAct);
 
-
-    const QIcon p0Icon = QIcon(":/images/control.png");
-    mPageAct[0] = viewMenu->addAction(p0Icon, tr("C&ontrol"), this,
-                    SLOT(onPage0()));
-    mPageAct[0]->setStatusTip(tr("Control each servo."));
-
-    const QIcon p1Icon = QIcon(":/images/calibrate.png");
-    mPageAct[1] = viewMenu->addAction(p1Icon, tr("C&alibration"), this,
-                    SLOT(onPage1()));
-    mPageAct[1]->setStatusTip(tr("Servo port setting and calibration."));
-
-    const QIcon p2Icon = QIcon(":/images/sequence.png");
-    mPageAct[2] = viewMenu->addAction(p2Icon, tr("&Sequence"), this,
-                    SLOT(onPage2()));
-    mPageAct[2]->setStatusTip(tr("Sequence play."));
-    const QIcon p3Icon = QIcon(":/images/seqedit.png");
-    mPageAct[3] = viewMenu->addAction(p3Icon, tr("Sequence &Edit"), this,
-                    SLOT(onPage3()));
-    mPageAct[3]->setStatusTip(tr("Sequence editor."));
     viewMenu->addSeparator();
     const QIcon clearIcon = QIcon(":/images/clear.png");
     mClearAct = viewMenu->addAction(clearIcon, tr("&Clear"), this,
-                    SLOT(onFileClear()), QKeySequence::Delete);
+                    SLOT(onViewClear()), QKeySequence::Delete);
     mClearAct->setStatusTip(tr("Clear the contents of the console."));
-
-
-    for (int i=0; i< MAX_PAGES; i++)
-        fileToolBar->addAction(mPageAct[i]);
     fileToolBar->addSeparator();
     fileToolBar->addAction(mClearAct);
-
-
+    // HELP  /////////////////////////
     QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
     const QIcon aboutIcon = QIcon(":/images/about.png");
     QAction *aboutAct = helpMenu->addAction(aboutIcon, tr("&About"), this, SLOT(about()), QKeySequence::HelpContents);
@@ -169,9 +199,14 @@ void MainWindow::createUi()
 
     mpDockView->setSizePolicy(sizePolicy);
 
+    /* create all control pages */
+    mpCtlPage[0] = new PageServo((QWidget*) mpDockView);
+    mpCtlPage[1] = new PageCali((QWidget*) mpDockView);
+    mpCtlPage[2] =  nullptr;
+    mpCtlPage[3] =  nullptr;
 
-    mpServoPage = new ServoPage((QWidget*) mpDockView);
-    mpCaliPage = new CaliPage((QWidget*) mpDockView);
+    mpCtlPage[0]->setVisible(false);
+    mpCtlPage[1]->setVisible(false);
     addDockWidget(Qt::LeftDockWidgetArea, mpDockView);
     //must called after ini is loaded
     mCurrentPageId = -1;
@@ -187,20 +222,31 @@ void MainWindow::createUi()
 void MainWindow::updateUi()
 {
     if(mUartCtrl.isOpened()) {
-        mCloseAct->setEnabled(true);
-        mOpenAct->setEnabled(false);
+        mDisAct->setEnabled(true);
+        mConAct->setEnabled(false);
 
     } else {
-        mCloseAct->setEnabled(false);
-        mOpenAct->setEnabled(true);
+        mDisAct->setEnabled(false);
+        mConAct->setEnabled(true);
     }
 }
-void MainWindow::onFileClear()
+void MainWindow::onFileOpen()
+{
+
+}
+void MainWindow::onFileSave()
+{
+    //update current page UI to Servo
+    if(mCurrentPageId>=0 && mCurrentPageId < MAX_PAGES)
+        mpCtlPage[mCurrentPageId]->saveUi();
+    saveSettings(DEFAULT_INI_NAME);
+}
+void MainWindow::onViewClear()
 {
     mpConsoleView->clear();
 }
 
-void MainWindow::onFileOpen()
+void MainWindow::onFileConnect()
 {
     if(mUartCtrl.isOpened()) {
         mUartCtrl.close();
@@ -228,6 +274,7 @@ void MainWindow::onFileOpen()
     }
     updateUi();
 }
+
 void MainWindow::customEvent(QEvent* event)
 {
     if(event->type() == MY_CUSTOM_EVENT)
@@ -254,63 +301,30 @@ void MainWindow::handleUpdateMessageEvent(UpdateMEssageEvent *event)
 {
     mpConsoleView->appendMessage(event->getMessage() );
 }
+void MainWindow::onPage0(){doEnablePage(0);}
+void MainWindow::onPage1(){doEnablePage(1);}
+void MainWindow::onPage2(){/*doEnablePage(2);*/}
+void MainWindow::onPage3(){/*doEnablePage(3);*/}
 void MainWindow::doEnablePage(int id)
 {
     for (int i=0; i< MAX_PAGES; i++){
-        mPageAct[i]->setEnabled(i!=id);
+        //mPageAct[i]->setChecked(i!=id);
         mPageAct[i]->setChecked(i==id);
     }
-    //save previous page
-     switch(mCurrentPageId){
-    case 0: mpServoPage->saveUi();break;
-    case 1:    mpCaliPage->saveUi();break;
-    default:
-        break;
+    //save previous page, mCurrentPageId=-1 if first time
+    if(mCurrentPageId>=0 && mCurrentPageId < MAX_PAGES && mpCtlPage[mCurrentPageId]){
+        mpCtlPage[mCurrentPageId]->saveUi();
+        mpCtlPage[mCurrentPageId]->activate(false);
+        mPageAct[mCurrentPageId]->setIcon(mPageOff[mCurrentPageId]);
     }
+    mCurrentPageId = id;
+    if(mpCtlPage[mCurrentPageId]) {
+        mpCtlPage[mCurrentPageId]->activate(true);
+        mPageAct[mCurrentPageId]->setIcon(mPageOn[mCurrentPageId]);
+    }
+}
 
-}
-void MainWindow::onPage0()
-{
-    doEnablePage(0);
 
-    mpCaliPage->activate(false); //save previous page
-    mpServoPage->activate(true);
-
-    //page view changed to new ID
-    mCurrentPageId = 0;
-}
-void MainWindow::onPage1()
-{
-    doEnablePage(1);
-
-    mpServoPage->activate(false);
-    mpCaliPage->activate(true);
-    //page view changed to new ID
-    mCurrentPageId = 1;
-}
-void MainWindow::onPage2()
-{
-    doEnablePage(2);
-    //page view changed to new ID
-    mCurrentPageId = 2;
-}
-void MainWindow::onPage3()
-{
-    doEnablePage(3);
-    //page view changed to new ID
-    mCurrentPageId = 3;
-}
-void MainWindow::onFileSave()
-{
-    //update current page UI to Servo
-    switch(mCurrentPageId){
-   case 0: mpServoPage->saveUi();break;
-   case 1:    mpCaliPage->saveUi();break;
-   default:
-       break;
-   }
-    saveSettings(DEFAULT_INI_NAME);
-}
 bool MainWindow::loadSettings(const char* szIniName)
 {
     void* handle  = openIniFile(szIniName, true);

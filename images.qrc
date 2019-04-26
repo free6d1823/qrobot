@@ -1,14 +1,36 @@
 <RCC>
     <qresource prefix="/">
         <file>images/open.png</file>
-        <file>images/about.png</file>
-        <file>images/calibrate.png</file>
-        <file>images/close.png</file>
-        <file>images/clear.png</file>
-        <file>images/control.png</file>
-        <file>images/sequence.png</file>
-        <file>images/seqedit.png</file>
-        <file>images/exit.png</file>
         <file>images/save.png</file>
+        <file>images/connect.png</file>
+        <file>images/disconnect.png</file>
+        <file>images/exit.png</file>
+        <file>images/clear.png</file>
+        <file>images/page0_on.png</file>
+        <file>images/page0_off.png</file>
+        <file>images/page1_on.png</file>
+        <file>images/page1_off.png</file>
+        <file>images/page2_on.png</file>
+        <file>images/page2_off.png</file>
+        <file>images/page3_on.png</file>
+        <file>images/page3_off.png</file>
+        <file>images/no1_on.png</file>
+        <file>images/no1_off.png</file>
+        <file>images/no2_on.png</file>
+        <file>images/no2_off.png</file>
+        <file>images/no3_on.png</file>
+        <file>images/no3_off.png</file>
+        <file>images/no4_on.png</file>
+        <file>images/no4_off.png</file>
+        <file>images/no5_on.png</file>
+        <file>images/no5_off.png</file>
+        <file>images/no6_on.png</file>
+        <file>images/no6_off.png</file>
+        <file>images/settings.png</file>
+        <file>images/zoomin.png</file>
+        <file>images/zoomout.png</file>
+        <file>images/about.png</file>
+        <file>images/pwm.png</file>
+        <file>images/angle.png</file>
     </qresource>
 </RCC>
