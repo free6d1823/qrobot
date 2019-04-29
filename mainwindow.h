@@ -25,6 +25,7 @@ public:
     ~MainWindow();
 
     int WriteMessage(const char* message, int length);
+    void appendLog(char* log);
     bool loadSettings(const char* szIniName);
     bool saveSettings(const char* szIniName);
     UartCtrl* getUart(){ return &mUartCtrl;}

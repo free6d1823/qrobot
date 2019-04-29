@@ -24,6 +24,14 @@ ServoCtrl::~ServoCtrl()
 void ServoCtrl::onSlideChanged(int value)
 {
     ui->spinAngle->setValue(value);
+    char command[256];
+
+    Servo* ps = gMainWnd->getServo(mId);
+    int port;
+    char* name = ps->getPortName(&port);
+    sprintf(command, "#%dP%dT%d\n", port, ps->findPwByAngle((float)value), 1);
+    gMainWnd->WriteMessage(command, strlen(command));
+    gMainWnd->appendLog(command);
 }
 
 void ServoCtrl::updateUi()

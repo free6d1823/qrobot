@@ -82,6 +82,7 @@ PageCali::PageCali(QWidget *parent) :
 
     connect(btnGroup, SIGNAL(buttonPressed(int)), this, SLOT(onBtnSelected(int)));
     btnGroup->setExclusive(true);
+    mCurSel = 0;
     mpBtnServo[mCurSel]->setChecked(true);
 
 

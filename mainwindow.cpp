@@ -268,6 +268,9 @@ void MainWindow::onFileConnect()
             if (0 > mUartCtrl.open(mPort, OnUartReadCallback, this))
             {
                 QMessageBox::critical(this,tr("Open Com"),tr("Open UART failed!"));
+            }else {
+                WriteMessage("VER\n", 4);
+                WriteMessage("#0P1200T1\n", 10);
             }
 
         }
@@ -301,6 +304,12 @@ void MainWindow::handleUpdateMessageEvent(UpdateMEssageEvent *event)
 {
     mpConsoleView->appendMessage(event->getMessage() );
 }
+//must call from UI thread
+void MainWindow::appendLog(char* log)
+{
+    mpConsoleView->appendMessage(log );
+}
+
 void MainWindow::onPage0(){doEnablePage(0);}
 void MainWindow::onPage1(){doEnablePage(1);}
 void MainWindow::onPage2(){/*doEnablePage(2);*/}
