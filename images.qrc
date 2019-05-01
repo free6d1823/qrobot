@@ -32,5 +32,32 @@
         <file>images/about.png</file>
         <file>images/pwm.png</file>
         <file>images/angle.png</file>
+        <file>images/time.png</file>
+        <file>images/pbegin_on.png</file>
+        <file>images/pbegin_dw.png</file>
+        <file>images/pbegin_off.png</file>
+        <file>images/pplay_on.png</file>
+        <file>images/pplay_dw.png</file>
+        <file>images/pplay_off.png</file>
+        <file>images/phome_on.png</file>
+        <file>images/phome_dw.png</file>
+        <file>images/phome_off.png</file>
+        <file>images/ppause_on.png</file>
+        <file>images/ppause_dw.png</file>
+        <file>images/ppause_off.png</file>
+        <file>images/pfast_on.png</file>
+        <file>images/pfast_dw.png</file>
+        <file>images/pfast_off.png</file>
+        <file>images/pslow_on.png</file>
+        <file>images/pslow_dw.png</file>
+        <file>images/pslow_off.png</file>
+        <file>images/delete_on.png</file>
+        <file>images/delete_dw.png</file>
+        <file>images/add_on.png</file>
+        <file>images/add_dw.png</file>
+        <file>images/movedown_on.png</file>
+        <file>images/movedown_dw.png</file>
+        <file>images/moveup_on.png</file>
+        <file>images/moveup_dw.png</file>
     </qresource>
 </RCC>
