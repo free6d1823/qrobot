@@ -10,17 +10,51 @@ Calibrate::Calibrate(QWidget *parent ) :
     ui(new Ui::Calibrate)
 {
     ui->setupUi(this);
+    mParent = (PageCali*) parent;
+
+    connect(ui->minPw, SIGNAL(valueChanged(int)),
+            this, SLOT(onMinPwChanged(int)));
+    connect(ui->maxPw, SIGNAL(valueChanged(int)),
+            this, SLOT(onMaxPwChanged(int)));
+    connect(ui->centerPw, SIGNAL(valueChanged(int)),
+            this, SLOT(onCenterPwChanged(int)));
 }
 
 Calibrate::~Calibrate()
 {
     delete ui;
 }
+void Calibrate::sendServoCommand(int idServo, int pw)
+{
+    Servo* ps = gMainWnd->getServo(idServo);
+    int port = ps->getPort();
+    char command[256];
+    sprintf(command, "#%dP%d T1000\n", port, pw);
+    gMainWnd->WriteMessage(command, (int)strlen(command));
+    gMainWnd->appendLog(command);
+
+}
+void Calibrate::onMinPwChanged(int value)
+{
+    int id = mParent->getCurrentServo();
+    sendServoCommand(id, value);
+}
+void Calibrate::onMaxPwChanged(int value)
+{
+    int id = mParent->getCurrentServo();
+    sendServoCommand(id, value);
+}
+void Calibrate::onCenterPwChanged(int value)
+{
+    int id = mParent->getCurrentServo();
+    sendServoCommand(id, value);
+}
+
 void Calibrate::updateUi(int id)
 {
     Servo* ps = gMainWnd->getServo(id);
-    int port;
-    char* name = ps->getPortName(&port);
+    int port = ps->getPort();
+    char* name = ps->getName();
     ui->id->setText(QString::number(id+1));
     ui->name->setText(name);
     ui->port->setValue(port);
@@ -34,8 +68,8 @@ void Calibrate::updateUi(int id)
 void Calibrate::saveUi(int id)
 {
     Servo* ps = gMainWnd->getServo(id);
-    ps->setPortName(ui->name->text().toLatin1().data(),
-                    ui->port->text().toInt());
+    ps->setName(ui->name->text().toLatin1().data());
+    ps->setPort(ui->port->text().toInt());
     ps->setMinAngle((float)ui->minAngle->value());
     ps->setMaxAngle((float)ui->maxAngle->value());
     ps->setCenterAngle((float)ui->centerAngle->value());

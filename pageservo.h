@@ -2,12 +2,14 @@
 #define SERVOCTRL_H
 
 #include <QWidget>
+#include <QSpinBox>
 #include "common.h"
 #include "controlpage.h"
 namespace Ui {
 class ServoCtrl;
 }
 class Servo;
+class PageServo;
 class ServoCtrl : public QWidget
 {
     Q_OBJECT
@@ -26,6 +28,7 @@ public:
 public slots:
     void onSlideChanged(int value);
 private:
+    PageServo* mParent;
     int mId;
     Ui::ServoCtrl *ui;
 };
@@ -45,8 +48,11 @@ public:
     /// \brief save Ui to all Servo objects
     ///
     virtual void saveUi();
+
+    int getServoTime(){return mSpinTime->value();}
 private:
 
+    QSpinBox* mSpinTime;
     ServoCtrl* mpServoCtrl[MAX_SERVOS_NUMBER];
 
 };

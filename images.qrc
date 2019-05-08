@@ -59,5 +59,6 @@
         <file>images/movedown_dw.png</file>
         <file>images/moveup_on.png</file>
         <file>images/moveup_dw.png</file>
+        <file>images/speed.png</file>
     </qresource>
 </RCC>

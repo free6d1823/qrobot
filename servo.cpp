@@ -10,12 +10,10 @@ Servo::Servo():
     mCurrentAngle = mCenterAngle;
 }
 
-void Servo:: setPortName(char* name, int port)
+void Servo:: setName(char* name)
 {
-    strncpy(mName, name, sizeof(mName));
-    if(port >= MAX_CONTROL_PORTS) //invalide port number
-        port = 0;
-    mPort = port;
+    if(name)
+        strncpy(mName, name, sizeof(mName));
 }
 
 ///

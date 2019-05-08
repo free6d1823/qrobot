@@ -7,10 +7,14 @@ class Servo
 public:
     Servo();
 
-    void setPortName(char* name, int port);
+    void setPort(int port){mPort = port;}
 
-    char* getPortName(int* pPortNumber){
-        *pPortNumber = mPort;
+    int getPort(){
+        return mPort;
+    }
+    void setName(char* name);
+
+    char* getName(){
         return mName;
     }
     float currentAngle(){ return mCurrentAngle;}

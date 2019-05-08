@@ -52,6 +52,7 @@ public slots:
      void onPage1();
      void onPage2();
      void onPage3();
+     void onCommandHelp();
 private:
     QAction *mOpenAct;
     QAction *mSaveAct;

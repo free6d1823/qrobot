@@ -34,7 +34,10 @@ SOURCES += main.cpp\
     inifile/inifile.cpp \
     controlpage.cpp \
     pagecali.cpp \
-    pageservo.cpp
+    pageservo.cpp \
+    helpdlg.cpp \
+    pageseq.cpp \
+    pageplay.cpp
 
 HEADERS  += mainwindow.h \
     comsetupdlg.h \
@@ -47,12 +50,18 @@ HEADERS  += mainwindow.h \
     inifile/inifile.h \
     controlpage.h \
     pagecali.h \
-    pgeservo.h
+    helpdlg.h \
+    pageservo.h \
+    pageseq.h \
+    pageplay.h
 
 FORMS    += mainwindow.ui \
     comsetupdlg.ui \
     calibrate.ui \
-    servoctrl.ui
+    servoctrl.ui \
+    helpdlg.ui \
+    pageseq.ui \
+    pageplay.ui
 
 RESOURCES += \
     images.qrc \

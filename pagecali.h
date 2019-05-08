@@ -10,6 +10,7 @@ namespace Ui {
 class Calibrate;
 }
 
+class PageCali;
 class Calibrate : public QWidget
 {
     Q_OBJECT
@@ -25,8 +26,14 @@ public:
     /// \brief save UI to Servo object
     ///
     void saveUi(int id);
+    void sendServoCommand(int idServo, int pw);
+public slots:
+    void onMinPwChanged(int value);
+    void onMaxPwChanged(int value);
+    void onCenterPwChanged(int value);
 private:
     Ui::Calibrate *ui;
+    PageCali* mParent;
 };
 
 
@@ -46,6 +53,7 @@ public:
     /// \brief save Ui to all Servo objects
     ///
     virtual void saveUi();
+    int getCurrentServo(){ return mCurSel;}
 public slots:
      void onBtnSelected(int id);
 private:

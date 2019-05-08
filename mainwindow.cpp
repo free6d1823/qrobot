@@ -17,7 +17,10 @@
 
 #include "controlpage.h"
 #include "pagecali.h"
-#include "pgeservo.h"
+#include "pageservo.h"
+#include "pageplay.h"
+#include "pageseq.h"
+
 #include "inifile/inifile.h"
 static char mPort[64]="/dev/ttyUSB0";
 static int mBaud = 115200;
@@ -170,6 +173,9 @@ void MainWindow::createMenuAndToolbar()
     const QIcon aboutIcon = QIcon(":/images/about.png");
     QAction *aboutAct = helpMenu->addAction(aboutIcon, tr("&About"), this, SLOT(about()), QKeySequence::HelpContents);
     aboutAct->setStatusTip(tr("Show the application's About box"));
+    QAction *helpAct = helpMenu->addAction(aboutIcon, tr("&SSC-32..."), this, SLOT(onCommandHelp()), QKeySequence::NextChild);
+    helpAct->setStatusTip(tr("Show SSCC-32 command sets"));
+
     fileToolBar->addSeparator();
     fileToolBar->addAction(aboutAct);
 
@@ -202,11 +208,13 @@ void MainWindow::createUi()
     /* create all control pages */
     mpCtlPage[0] = new PageServo((QWidget*) mpDockView);
     mpCtlPage[1] = new PageCali((QWidget*) mpDockView);
-    mpCtlPage[2] =  nullptr;
-    mpCtlPage[3] =  nullptr;
+    mpCtlPage[2] =  new PageSeq((QWidget*) mpDockView);
+    mpCtlPage[3] =  new PagePlay((QWidget*) mpDockView);;
 
     mpCtlPage[0]->setVisible(false);
     mpCtlPage[1]->setVisible(false);
+    mpCtlPage[2]->setVisible(false);
+    mpCtlPage[3]->setVisible(false);
     addDockWidget(Qt::LeftDockWidgetArea, mpDockView);
     //must called after ini is loaded
     mCurrentPageId = -1;
@@ -229,6 +237,32 @@ void MainWindow::updateUi()
         mDisAct->setEnabled(false);
         mConAct->setEnabled(true);
     }
+}
+void MainWindow::onCommandHelp()
+{
+    QMessageBox::about(this, tr("SSC-32 Command Sets"),
+             tr("<p><b>Servo Motion:</b>"
+                "&nbsp;&nbsp;&nbsp;&nbsp;#&lt;ch&gt;P&lt;pw&gt;S&lt;spd&gt;T&lt;time&gt;&lt;cr&gt;<br>"
+
+                "&nbsp;&nbsp;&nbsp;&nbsp;&lt;ch&gt;&nbsp;&nbsp;&nbsp;&nbsp;PWM port, 0~31.<br>"
+                "&nbsp;&nbsp;&nbsp;&nbsp;&lt;pw&gt;&nbsp;&nbsp;&nbsp;&nbsp;PWM pules in us, 500~2500.<br>"
+                "&nbsp;&nbsp;&nbsp;&nbsp;&lt;spd&gt;&nbsp;&nbsp;&nbsp; Moving speed, in us/sec, optional.<br>"
+                "&nbsp;&nbsp;&nbsp;&nbsp;&lt;time&gt;&nbsp;&nbsp; Time to finish all actions, in ms. Must put in the last. Max. 65535, optional.<br>"
+                "&nbsp;&nbsp;&nbsp;&nbsp;&lt;cr&gt;&nbsp;&nbsp;&nbsp;&nbsp;Carret return code, 0x0D.<br>"
+                "</p>"
+                "<p><b>Level Output:</b>"
+                "&nbsp;&nbsp;&nbsp;&nbsp;#&lt;ch&gt;&lt;lvl&gt;...#&lt;ch&gt;&lt;lvl&gt;&lt;cr&gt;<br>"
+                "&nbsp;&nbsp;&nbsp;&nbsp;&lt;ch&gt;&nbsp;&nbsp;&nbsp;&nbsp;PWM port, 0~31.<br>"
+                "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lvl&gt;Output voltage level. H for high, L for low.<br>"
+                "&nbsp;&nbsp;&nbsp;&nbsp;&lt;cr&gt; &#9; Carret return code, 0x0D.<br>"
+                "</p>"
+                "<p><b>Bitwise Level Output:</b>"
+                "&nbsp;&nbsp;&nbsp;&nbsp;#&lt;bank&gt;:&lt;value&gt;&lt;cr&gt;<br>"
+                "&nbsp;&nbsp;&nbsp;&nbsp;&lt;bank&gt;&nbsp;&nbsp;&nbsp;&nbsp;0~3. Bank 0 maps to channel 0~7, Bank 3 maps to channel 24~31.<br>"
+                "&nbsp;&nbsp;&nbsp;&nbsp;&lt;value&gt; 1 is high (5V), 0 is low (0V). Bit0 is LSB.<br>"
+                "&nbsp;&nbsp;&nbsp;&nbsp;&lt;cr&gt; &#9; Carret return code, 0x0D.<br>"
+                "</p>"
+                ));
 }
 void MainWindow::onFileOpen()
 {
@@ -312,8 +346,8 @@ void MainWindow::appendLog(char* log)
 
 void MainWindow::onPage0(){doEnablePage(0);}
 void MainWindow::onPage1(){doEnablePage(1);}
-void MainWindow::onPage2(){/*doEnablePage(2);*/}
-void MainWindow::onPage3(){/*doEnablePage(3);*/}
+void MainWindow::onPage2(){doEnablePage(2);}
+void MainWindow::onPage3(){doEnablePage(3);}
 void MainWindow::doEnablePage(int id)
 {
     for (int i=0; i< MAX_PAGES; i++){
@@ -351,7 +385,8 @@ bool MainWindow::loadSettings(const char* szIniName)
         sprintf(session, "servo_%d", i);
         nValue = GetProfileInt(session, "port", i, handle);
         GetProfileString(session, "name", szValue, sizeof(szValue), "", handle );
-        mServo[i].setPortName(szValue, nValue);
+        mServo[i].setName(szValue);
+        mServo[i].setPort(nValue);
         fValue = GetProfileFloat(session, "minAngle", MIN_ANGLE, handle);
         mServo[i].setMinAngle(fValue);
         fValue = GetProfileFloat(session, "maxAngle", MAX_ANGLE, handle);
@@ -384,9 +419,8 @@ bool MainWindow::saveSettings(const char* szIniName)
 
     for (int i=0; i< MAX_SERVOS_NUMBER; i++) {
         sprintf(session, "servo_%d", i);
-        char* name = mServo[i].getPortName(&nValue);
-        WriteProfileInt(session, "port", nValue, handle);
-        WriteProfileString(session, "name", name, handle );
+        WriteProfileInt(session, "port", mServo[i].getPort(), handle);
+        WriteProfileString(session, "name", mServo[i].getName(), handle );
 
         WriteProfileFloat(session, "minAngle",  mServo[i].minAngle(), handle);
         WriteProfileFloat(session, "maxAngle",  mServo[i].maxAngle(), handle);
