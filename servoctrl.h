@@ -25,11 +25,32 @@ public:
     virtual void saveUi();
 public slots:
     void onSlideChanged(int value);
-private:
+protected:
     QWidget* mParent;
     ServoCtrlAngleChanged mFnAngleChanged;
     int mId;
     Ui::ServoCtrl *ui;
+};
+
+class ServoSetting : public ServoCtrl
+{
+    Q_OBJECT
+
+public:
+    explicit ServoSetting(QWidget *parent, int i, ServoCtrlAngleChanged callback, bool hideCheck=true);
+    ~ServoSetting();
+    ///
+    /// \brief update UI with Servo data
+    ///
+    virtual void updateUi();
+    ///
+    /// \brief save UI to Servo object
+    ///
+    virtual void saveUi();
+public slots:
+    void onSlideChanged(int value);
+private:
+
 };
 
 #endif // SERVOSETTING_H

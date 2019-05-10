@@ -18,7 +18,7 @@ public:
     void onAngleChanged(int id, int angle, int speed);
 private:
     Ui::ActionEditor *ui;
-    ServoCtrl* mpServoCtrl[MAX_SERVOS_NUMBER];
+    ServoSetting* mpServoCtrl[MAX_SERVOS_NUMBER];
 };
 
 #endif // ACTIONEDITOR_H

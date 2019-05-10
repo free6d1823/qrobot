@@ -14,7 +14,7 @@ ActionEditor::ActionEditor(QWidget *parent) :
     connect(ui->spinTime, SIGNAL(valueChanged(int)),
             this, SLOT(onTotalTimeChanged(int)));
     for (int i=0; i< MAX_SERVOS_NUMBER; i++) {
-        mpServoCtrl[i] = new ServoCtrl(this, i, OnServoCtrlAngleChanged, false);
+        mpServoCtrl[i] = new ServoSetting(this, i, OnServoCtrlAngleChanged, false);
         ui->list->addWidget(mpServoCtrl[i] );
     }
 }

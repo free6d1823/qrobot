@@ -60,5 +60,9 @@
         <file>images/moveup_on.png</file>
         <file>images/moveup_dw.png</file>
         <file>images/speed.png</file>
+        <file>images/go.png</file>
+        <file>images/edit.png</file>
+        <file>images/green.png</file>
+        <file>images/red.png</file>
     </qresource>
 </RCC>

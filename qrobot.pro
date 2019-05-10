@@ -39,7 +39,8 @@ SOURCES += main.cpp\
     pageplay.cpp \
     actioneditor.cpp \
     servoctrl.cpp \
-    pageservos.cpp
+    pageservos.cpp \
+    actionitem.cpp
 
 HEADERS  += mainwindow.h \
     comsetupdlg.h \
@@ -57,7 +58,8 @@ HEADERS  += mainwindow.h \
     pageplay.h \
     actioneditor.h \
     servoctrl.h \
-    pageservos.h
+    pageservos.h \
+    actionitem.h
 
 FORMS    += mainwindow.ui \
     comsetupdlg.ui \
@@ -67,7 +69,8 @@ FORMS    += mainwindow.ui \
     pageseq.ui \
     pageplay.ui \
     actioneditor.ui \
-    pageservos.ui
+    pageservos.ui \
+    actionitem.ui
 
 RESOURCES += \
     images.qrc \

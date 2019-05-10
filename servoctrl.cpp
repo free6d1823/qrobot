@@ -60,3 +60,51 @@ void ServoCtrl::saveUi()
     ps->setCurrentSpeed((float) ui->spinSpeed->value());
 
 }
+///
+ServoSetting::ServoSetting(QWidget *parent, int i, ServoCtrlAngleChanged callback, bool hideCheck) :
+    ServoCtrl(parent, i, callback, hideCheck)
+{
+    ui->check->setVisible(true);
+    connect(ui->spinAngle, SIGNAL(valueChanged(int)),
+            ui->slideAngle, SLOT(setValue(int)));
+    connect(ui->slideAngle, SIGNAL(valueChanged(int)),
+            this, SLOT(onSlideChanged(int)));
+    updateUi();
+}
+
+ServoSetting::~ServoSetting()
+{
+
+}
+
+void ServoSetting::onSlideChanged(int value)
+{
+    ui->spinAngle->setValue(value);
+    if(mFnAngleChanged)
+    mFnAngleChanged(mId, value, ui->spinSpeed->value(), mParent);
+
+}
+
+void ServoSetting::updateUi()
+{
+    Servo* ps = gSystem->getServo(mId);
+    int port= ps->getPort();
+    char* name = ps->getName();
+    ui->groupBox->setTitle(QString::number(mId+1));
+    ui->name->setText(name);
+    ui->port->setText(QString::number(port));
+
+    ui->spinAngle->setMaximum((int)ps->maxAngle());
+    ui->spinAngle->setMinimum((int)ps->minAngle());
+    ui->slideAngle->setMinimum((int)ps->minAngle());
+    ui->slideAngle->setMaximum((int)ps->maxAngle());
+    //reference setting from page 1
+    ui->spinAngle->setValue((int)ps->currentAngle());
+    ui->slideAngle->setValue((int)ps->currentAngle());
+    ui->spinSpeed->setValue((int)ps->currentSpeed());
+}
+void ServoSetting::saveUi()
+{
+//save settings to sequence
+
+}

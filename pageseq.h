@@ -3,13 +3,14 @@
 
 #include <QWidget>
 #include <QToolButton>
+#include <vector>
 #include "common.h"
 #include "controlpage.h"
 
 namespace Ui {
 class PageSeq;
 }
-
+class ActionItem;
 class PageSeq : public ControlPage
 {
     Q_OBJECT
@@ -34,7 +35,7 @@ public slots:
 
 private:
     Ui::PageSeq *ui;
-
+    std::vector <ActionItem*> mItem;
 };
 
 #endif // PAGESEQ_H
