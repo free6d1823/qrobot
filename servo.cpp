@@ -26,7 +26,7 @@ void Servo::calibration()
     //ma = (pw0 - pw1)/(angle0 - angle1)
     //mb = pw0 - ma * angle0;
     ma2 = (mMaxPw - mCenterPw)/(mMaxAngle - mCenterAngle);
-    mb2 = mMaxPw - ma2*mMinAngle;
+    mb2 = mMaxPw - ma2*mMaxAngle;
 
     ma1 = (mMinPw - mCenterPw)/(mMinAngle - mCenterAngle);
     mb1 = mMinPw - ma1*mMinAngle;

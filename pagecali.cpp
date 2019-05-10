@@ -29,7 +29,7 @@ void Calibrate::sendServoCommand(int idServo, int pw)
     Servo* ps = gSystem->getServo(idServo);
     int port = ps->getPort();
     char command[256];
-    sprintf(command, "#%dP%d T1000\n", port, pw);
+    sprintf(command, "#%dP%d T500\n", port, pw);
     gMainWnd->WriteMessage(command, (int)strlen(command));
     gMainWnd->appendLog(command);
 
@@ -79,6 +79,7 @@ void Calibrate::saveUi(int id)
     ps->setMinPw((float)ui->minPw->value());
     ps->setMaxPw((float)ui->maxPw->value());
     ps->setCenterPw((float)ui->centerPw->value());
+    ps->calibration();
 
 }
 ///////////////////////////////
