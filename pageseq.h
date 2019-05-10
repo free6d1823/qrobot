@@ -5,6 +5,7 @@
 #include <QToolButton>
 #include "common.h"
 #include "controlpage.h"
+
 namespace Ui {
 class PageSeq;
 }
@@ -25,8 +26,15 @@ public:
     /// \brief save Ui to all Servo objects
     ///
     virtual void saveUi();
+public slots:
+    void onAddClicked();
+    void onDeleteClicked();
+    void onUpClicked();
+    void onDownClicked();
+
 private:
     Ui::PageSeq *ui;
+
 };
 
 #endif // PAGESEQ_H

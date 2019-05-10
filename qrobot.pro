@@ -34,10 +34,12 @@ SOURCES += main.cpp\
     inifile/inifile.cpp \
     controlpage.cpp \
     pagecali.cpp \
-    pageservo.cpp \
     helpdlg.cpp \
     pageseq.cpp \
-    pageplay.cpp
+    pageplay.cpp \
+    actioneditor.cpp \
+    servoctrl.cpp \
+    pageservos.cpp
 
 HEADERS  += mainwindow.h \
     comsetupdlg.h \
@@ -51,9 +53,11 @@ HEADERS  += mainwindow.h \
     controlpage.h \
     pagecali.h \
     helpdlg.h \
-    pageservo.h \
     pageseq.h \
-    pageplay.h
+    pageplay.h \
+    actioneditor.h \
+    servoctrl.h \
+    pageservos.h
 
 FORMS    += mainwindow.ui \
     comsetupdlg.ui \
@@ -61,7 +65,9 @@ FORMS    += mainwindow.ui \
     servoctrl.ui \
     helpdlg.ui \
     pageseq.ui \
-    pageplay.ui
+    pageplay.ui \
+    actioneditor.ui \
+    pageservos.ui
 
 RESOURCES += \
     images.qrc \

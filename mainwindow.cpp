@@ -17,11 +17,11 @@
 
 #include "controlpage.h"
 #include "pagecali.h"
-#include "pageservo.h"
+#include "pageservos.h"
 #include "pageplay.h"
 #include "pageseq.h"
 
-#include "inifile/inifile.h"
+
 static char mPort[64]="/dev/ttyUSB0";
 static int mBaud = 115200;
 static int mDatabits = 8;
@@ -36,7 +36,8 @@ bool mTerminateThread = false;
 pthread_t mThreadId = 0;
 
 MainWindow* gMainWnd = NULL;
-
+static SystemData sSystemData;
+SystemData* gSystem = &sSystemData; //public his pointer
 
 void OnUartReadCallback(const void* buffer, size_t length, void* pUserData)
 {
@@ -206,7 +207,7 @@ void MainWindow::createUi()
     mpDockView->setSizePolicy(sizePolicy);
 
     /* create all control pages */
-    mpCtlPage[0] = new PageServo((QWidget*) mpDockView);
+    mpCtlPage[0] = new PageServos((QWidget*) mpDockView);
     mpCtlPage[1] = new PageCali((QWidget*) mpDockView);
     mpCtlPage[2] =  new PageSeq((QWidget*) mpDockView);
     mpCtlPage[3] =  new PagePlay((QWidget*) mpDockView);;
@@ -370,66 +371,10 @@ void MainWindow::doEnablePage(int id)
 
 bool MainWindow::loadSettings(const char* szIniName)
 {
-    void* handle  = openIniFile(szIniName, true);
-    if(!handle)
-        return false;
-    int nMAXServo =
-        GetProfileInt("system", "servoCounts", MAX_SERVOS_NUMBER, handle);
-    if (nMAXServo > MAX_SERVOS_NUMBER)
-        nMAXServo = MAX_SERVOS_NUMBER;
-    char session[64];
-    char szValue[256];
-    int nValue;
-    float fValue;
-    for (int i=0; i< nMAXServo; i++) {
-        sprintf(session, "servo_%d", i);
-        nValue = GetProfileInt(session, "port", i, handle);
-        GetProfileString(session, "name", szValue, sizeof(szValue), "", handle );
-        mServo[i].setName(szValue);
-        mServo[i].setPort(nValue);
-        fValue = GetProfileFloat(session, "minAngle", MIN_ANGLE, handle);
-        mServo[i].setMinAngle(fValue);
-        fValue = GetProfileFloat(session, "maxAngle", MAX_ANGLE, handle);
-        mServo[i].setMaxAngle(fValue);
-        fValue = GetProfileFloat(session, "centerAngle", CENTER_ANGLE, handle);
-        mServo[i].setCenterAngle(fValue);
-        fValue = GetProfileFloat(session, "centerPw", DEFAULT_CENTER_PW, handle);
-        mServo[i].setCenterPw(fValue);
-        fValue = GetProfileFloat(session, "minPw", DEFAULT_MIN_PW, handle);
-        mServo[i].setMinPw(fValue);
-        fValue = GetProfileFloat(session, "maxPw", DEFAULT_MAX_PW, handle);
-        mServo[i].setMaxPw(fValue);
-        mServo[i].calibration();
-    }
-
-    closeIniFile(handle);
-
-    return true;
+    return gSystem->loadIni(szIniName);
 }
 bool MainWindow::saveSettings(const char* szIniName)
 {
-    void* handle  = openIniFile(szIniName, false);
-    if(!handle)
-        return false;
-    WriteProfileInt("system", "servoCounts", MAX_SERVOS_NUMBER, handle);
+    return gSystem->saveIni(szIniName);
 
-    char session[64];
-
-    int nValue;
-
-    for (int i=0; i< MAX_SERVOS_NUMBER; i++) {
-        sprintf(session, "servo_%d", i);
-        WriteProfileInt(session, "port", mServo[i].getPort(), handle);
-        WriteProfileString(session, "name", mServo[i].getName(), handle );
-
-        WriteProfileFloat(session, "minAngle",  mServo[i].minAngle(), handle);
-        WriteProfileFloat(session, "maxAngle",  mServo[i].maxAngle(), handle);
-        WriteProfileFloat(session, "centerAngle",  mServo[i].centerAngle(), handle);
-        WriteProfileFloat(session, "minPw",  mServo[i].minPw(), handle);
-        WriteProfileFloat(session, "maxPw",  mServo[i].maxPw(), handle);
-        WriteProfileFloat(session, "centerPw",  mServo[i].centerPw(), handle);
-    }
-    closeIniFile(handle);
-
-    return true;
 }

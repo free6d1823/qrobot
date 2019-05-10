@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Pageplay</class>
- <widget class="QWidget" name="Pageplay">
+ <class>PagePlay</class>
+ <widget class="QWidget" name="PagePlay">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>347</width>
-    <height>384</height>
+    <width>607</width>
+    <height>400</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>350</width>
+    <height>400</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -36,18 +42,24 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>331</width>
-     <height>41</height>
+     <width>464</width>
+     <height>73</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QToolButton" name="btnSlow">
+      <property name="minimumSize">
+       <size>
+        <width>48</width>
+        <height>48</height>
+       </size>
+      </property>
       <property name="text">
        <string>...</string>
       </property>
       <property name="icon">
-       <iconset resource="images.qrc">
+       <iconset>
         <normaloff>:/images/pslow_on.png</normaloff>:/images/pslow_on.png</iconset>
       </property>
       <property name="iconSize">
@@ -67,7 +79,7 @@
        <string>...</string>
       </property>
       <property name="icon">
-       <iconset resource="images.qrc">
+       <iconset>
         <normaloff>:/images/pfast_on.png</normaloff>:/images/pfast_on.png</iconset>
       </property>
       <property name="iconSize">
@@ -87,7 +99,7 @@
        <string>...</string>
       </property>
       <property name="icon">
-       <iconset resource="images.qrc">
+       <iconset>
         <normaloff>:/images/phome_on.png</normaloff>:/images/phome_on.png</iconset>
       </property>
       <property name="iconSize">
@@ -103,11 +115,17 @@
     </item>
     <item>
      <widget class="QToolButton" name="btnBegin">
+      <property name="minimumSize">
+       <size>
+        <width>48</width>
+        <height>48</height>
+       </size>
+      </property>
       <property name="text">
        <string>...</string>
       </property>
       <property name="icon">
-       <iconset resource="images.qrc">
+       <iconset>
         <normaloff>:/images/pbegin_on.png</normaloff>:/images/pbegin_on.png</iconset>
       </property>
       <property name="iconSize">
@@ -127,7 +145,7 @@
        <string>...</string>
       </property>
       <property name="icon">
-       <iconset resource="images.qrc">
+       <iconset>
         <normaloff>:/images/pplay_on.png</normaloff>:/images/pplay_on.png</iconset>
       </property>
       <property name="iconSize">
@@ -147,7 +165,7 @@
        <string>...</string>
       </property>
       <property name="icon">
-       <iconset resource="images.qrc">
+       <iconset>
         <normaloff>:/images/ppause_on.png</normaloff>:/images/ppause_on.png</iconset>
       </property>
       <property name="iconSize">
@@ -164,8 +182,6 @@
    </layout>
   </widget>
  </widget>
- <resources>
-  <include location="images.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

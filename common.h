@@ -16,4 +16,8 @@
 #define DEFAULT_MAX_PW     2500
 #define DEFAULT_CENTER_PW  1500
 
+class MainWindow;
+extern MainWindow* gMainWnd;
+class SystemData;
+extern SystemData* gSystem;
 #endif // COMMON_H

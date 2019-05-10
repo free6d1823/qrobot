@@ -29,9 +29,7 @@ public:
     bool loadSettings(const char* szIniName);
     bool saveSettings(const char* szIniName);
     UartCtrl* getUart(){ return &mUartCtrl;}
-    Servo* getServo(int i){
-        return &mServo[i%MAX_SERVOS_NUMBER];
-    }
+
 
 private:
     Ui::MainWindow *ui;
@@ -72,7 +70,7 @@ private:
     UartCtrl mUartCtrl;
 
     MainView*   mpMainView;
-    Servo   mServo[MAX_SERVOS_NUMBER];
+
 protected:
     void doEnablePage(int id);
     virtual void resizeEvent(QResizeEvent *event);
@@ -113,7 +111,7 @@ private:
 
 
 
-extern MainWindow* gMainWnd;
+
 
 
 #endif // MAINWINDOW_H

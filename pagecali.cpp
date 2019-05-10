@@ -26,7 +26,7 @@ Calibrate::~Calibrate()
 }
 void Calibrate::sendServoCommand(int idServo, int pw)
 {
-    Servo* ps = gMainWnd->getServo(idServo);
+    Servo* ps = gSystem->getServo(idServo);
     int port = ps->getPort();
     char command[256];
     sprintf(command, "#%dP%d T1000\n", port, pw);
@@ -37,22 +37,25 @@ void Calibrate::sendServoCommand(int idServo, int pw)
 void Calibrate::onMinPwChanged(int value)
 {
     int id = mParent->getCurrentServo();
+    if (isVisible())
     sendServoCommand(id, value);
 }
 void Calibrate::onMaxPwChanged(int value)
 {
     int id = mParent->getCurrentServo();
+        if (isVisible())
     sendServoCommand(id, value);
 }
 void Calibrate::onCenterPwChanged(int value)
 {
     int id = mParent->getCurrentServo();
+        if (isVisible())
     sendServoCommand(id, value);
 }
 
 void Calibrate::updateUi(int id)
 {
-    Servo* ps = gMainWnd->getServo(id);
+    Servo* ps = gSystem->getServo(id);
     int port = ps->getPort();
     char* name = ps->getName();
     ui->id->setText(QString::number(id+1));
@@ -67,7 +70,7 @@ void Calibrate::updateUi(int id)
 }
 void Calibrate::saveUi(int id)
 {
-    Servo* ps = gMainWnd->getServo(id);
+    Servo* ps = gSystem->getServo(id);
     ps->setName(ui->name->text().toLatin1().data());
     ps->setPort(ui->port->text().toInt());
     ps->setMinAngle((float)ui->minAngle->value());
