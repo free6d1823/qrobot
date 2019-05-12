@@ -11,6 +11,7 @@ namespace Ui {
 class PageSeq;
 }
 class ActionItem;
+class QListWidgetItem;
 class PageSeq : public ControlPage
 {
     Q_OBJECT
@@ -32,7 +33,8 @@ public slots:
     void onDeleteClicked();
     void onUpClicked();
     void onDownClicked();
-
+    void onItemClicked(QListWidgetItem* item);
+    void onItemDoubleClicked(QListWidgetItem* item);
 private:
     Ui::PageSeq *ui;
     std::vector <ActionItem*> mItem;

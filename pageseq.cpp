@@ -12,13 +12,19 @@ PageSeq::PageSeq(QWidget *parent) :
     connect(ui->remove, SIGNAL(clicked()), this, SLOT(onDeleteClicked()));
     connect(ui->up, SIGNAL(clicked()), this, SLOT(onUpClicked()));
     connect(ui->down, SIGNAL(clicked()), this, SLOT(onDownClicked()));
+    connect(ui->list, SIGNAL(itemClicked(QListWidgetItem* )),
+            this, SLOT(onItemClicked(QListWidgetItem* )));
+    connect(ui->list, SIGNAL(itemDoubleClicked(QListWidgetItem* )),
+            this, SLOT(onItemDoubleClicked(QListWidgetItem* )));
     mItem.clear();
     for (int i=0; i<30; i++) {
 
-        ActionItem* item = new ActionItem(this);
+        ActionItem* item = new ActionItem();
         mItem.push_back(item);
-        QListWidgetItem* witem = new QListWidgetItem(QIcon(":/images/go.png"), "name");
+        QListWidgetItem* witem = new QListWidgetItem(ui->list);
+        witem->setSizeHint(QSize(0,30));
         ui->list->addItem(witem);
+        ui->list->setItemWidget(witem, item);
     }
 }
 
@@ -26,7 +32,15 @@ PageSeq::~PageSeq()
 {
     delete ui;
 }
+void PageSeq::onItemClicked(QListWidgetItem* item)
+{
 
+}
+void PageSeq::onItemDoubleClicked(QListWidgetItem* item)
+{
+    ActionEditor dlg;
+    dlg.exec();
+}
 void PageSeq::activate(bool enable)
 {
 
